@@ -1,4 +1,4 @@
-# Free games news parser
+# Free games news parser and posting in tg channel
 Install all libs. Use:  **pip install -r requirements.txt**
 
 To start work, create **setting.ini** file in root with code:
