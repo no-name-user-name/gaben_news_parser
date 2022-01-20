@@ -1,4 +1,4 @@
-# Free game news parser
+# Free games news parser
 to start work, create setting.ini file in root with code:
 
 
