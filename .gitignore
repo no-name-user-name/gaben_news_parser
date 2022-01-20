@@ -1,0 +1,8 @@
+*.ini
+_temp/
+build/
+test.py
+database.sqlite
+chromedriver.exe
+__pycache__
+*.log
