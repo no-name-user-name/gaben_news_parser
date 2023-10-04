@@ -6,3 +6,5 @@ database.sqlite
 chromedriver.exe
 __pycache__
 *.log
+*.sqlite
+.idea/
