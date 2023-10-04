@@ -1,19 +1,20 @@
-import loader
-from parsers import Parser
+import threading
 from time import sleep
-from utils.base_functions import log
 
-def main(p):
-    pars_count = 0
+from gaben import Parser, bot
+
+
+def parser_loop():
     while 1:
         try:
-            p.start()
-            pars_count += 1
-            print(pars_count)
+            Parser().start()
             sleep(60)
         except Exception as e:
-            log(e)
+            raise
+
 
 if __name__ == '__main__':
-    p = Parser()
-    main(p)
+    print('~~ Silent Start ~~')
+    threading.Thread(target=parser_loop).start()
+
+    bot.start()
