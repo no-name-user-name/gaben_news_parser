@@ -62,7 +62,6 @@ class Parser:
         self.coopland('https://coop-land.ru/tags/%E1%E5%F2%E0-%F2%E5%F1%F2/'),
         self.rbkgames(),
         self.cq(),
-        # self.topmmogames()
 
     def make_post(self, delay=5):
         bot = get_bot()
