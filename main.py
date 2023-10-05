@@ -8,9 +8,11 @@ def parser_loop():
     while 1:
         try:
             Parser().start()
-            sleep(60)
         except Exception as e:
             raise
+
+        finally:
+            sleep(60)
 
 
 if __name__ == '__main__':

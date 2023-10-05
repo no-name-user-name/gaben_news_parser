@@ -41,3 +41,14 @@ def image_to_byte_array(image: Image) -> bytes:
     img_byte_arr = BytesIO()
     image.save(img_byte_arr, format='PNG')
     return img_byte_arr.getvalue()
+
+
+def catcherError(func):
+    def f(*args, **kwargs):
+        try:
+            out = func(*args, **kwargs)
+            return out
+        except Exception as e:
+            print(f"[!] Error in {func.__name__}: {e}")
+
+    return f
