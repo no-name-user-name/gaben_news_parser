@@ -3,3 +3,4 @@ pyTelegramBotAPI
 requests~=2.31.0
 Pillow~=10.0.1
 selenium~=4.13.0
+webdriver_manager
