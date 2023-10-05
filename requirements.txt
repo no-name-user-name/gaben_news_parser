@@ -1,4 +1,5 @@
-beautifulsoup4
+beautifulsoup4~=4.12.2
 pyTelegramBotAPI
-requests
-undetected_chromedriver
+requests~=2.31.0
+Pillow~=10.0.1
+selenium~=4.13.0
