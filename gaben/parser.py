@@ -327,7 +327,7 @@ class Parser:
         for each in items:
             self.topic_name = clear_text_format(each.find('h2', class_='story__title').text)
 
-            if 'У нас новая игра!' in self.topic_name:
+            if each.find('a', class_='story__sponsor') is not None:
                 continue
 
             self.topic_link = each.find('a', class_='story__title-link')['href']
