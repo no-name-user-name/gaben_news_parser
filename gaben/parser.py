@@ -20,13 +20,13 @@ from gaben.utils import clear_text_format, set_tags, image_to_byte_array, catche
 
 
 class Parser:
-    def __init__(self, is_headless=True):
+    def __init__(self, is_headless=True, profile='main'):
         self.db = DataBase()
 
         self.s = requests.Session()
         self.s.headers = {}
 
-        temp_dir_path = os.getcwd() + '\\_temp\\' + 'profile_main'
+        temp_dir_path = os.getcwd() + '\\_temp\\' + 'profile_' + profile
         os.makedirs(temp_dir_path, exist_ok=True)
         options = ChromeOptions()
         options.add_argument(f"--user-data-dir={temp_dir_path}")
@@ -83,7 +83,7 @@ class Parser:
     def make_post(self, delay=5):
         bot = get_bot()
 
-        if 'data:image' in self.topic_img:
+        if 'data:image' in self.topic_img or self.topic_img == '':
             self.topic_img = open('content/no.png', 'rb')
 
         elif '.webp' in self.topic_img:
@@ -327,13 +327,19 @@ class Parser:
         for each in items:
             self.topic_name = clear_text_format(each.find('h2', class_='story__title').text)
             self.topic_link = each.find('a', class_='story__title-link')['href']
-            self.topic_img = each.find('img', class_='story-image__image')['data-src']
             self.topic_post = clear_text_format(each.find('div', class_='story-block_type_text').text)
+            try:
+                self.topic_img = each.find('img', class_='story-image__image')['data-src']
+            except TypeError:
+                self.topic_img = ''
 
             if debug:
-                topic_post_full = clear_text_format(
-                    self.__get_content_request(self.topic_link).find('div', class_='story__content-inner').text
-                )
+                try:
+                    topic_post_full = clear_text_format(
+                        self.__get_content_request(self.topic_link).find('div', class_='story__content-inner').text
+                    )
+                except AttributeError:
+                    topic_post_full = self.topic_post
                 self.topic_tags = set_tags(self.topic_name + topic_post_full)
 
                 pprint({'topic_name': self.topic_name, 'topic_post': self.topic_post, 'topic_link': self.topic_link,
@@ -343,9 +349,12 @@ class Parser:
                 continue
 
             if not self.__check_is_old(self.topic_link):
-                topic_post_full = clear_text_format(
-                    self.__get_content_request(self.topic_link).find('div', class_='story__content-inner').text
-                )
+                try:
+                    topic_post_full = clear_text_format(
+                        self.__get_content_request(self.topic_link).find('div', class_='story__content-inner').text
+                    )
+                except AttributeError:
+                    topic_post_full = self.topic_post
                 self.topic_tags = set_tags(self.topic_name + topic_post_full)
                 self.make_post()
 
