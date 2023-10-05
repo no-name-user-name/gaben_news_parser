@@ -326,6 +326,10 @@ class Parser:
 
         for each in items:
             self.topic_name = clear_text_format(each.find('h2', class_='story__title').text)
+
+            if 'У нас новая игра!' in self.topic_name:
+                continue
+
             self.topic_link = each.find('a', class_='story__title-link')['href']
             self.topic_post = clear_text_format(each.find('div', class_='story-block_type_text').text)
             try:
