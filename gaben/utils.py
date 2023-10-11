@@ -3,7 +3,8 @@ from io import BytesIO
 
 from PIL import Image
 
-from config import tags
+from config import tags, admins
+from gaben.bot import get_bot
 
 
 def clear_text_format(txt):
@@ -49,6 +50,8 @@ def catcherError(func):
             out = func(*args, **kwargs)
             return out
         except Exception as e:
-            print(f"[!] Error in {func.__name__}: {e}")
+            msg = f"[!] Error in {func.__name__}: {e}"
+            get_bot().send_message(admins, msg)
+            print(msg)
 
     return f

@@ -9,7 +9,7 @@ def parser_loop():
         try:
             Parser().start()
         except Exception as e:
-            raise
+            print('Error: ' + str(e))
 
         finally:
             sleep(60)

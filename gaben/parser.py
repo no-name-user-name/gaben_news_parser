@@ -26,16 +26,19 @@ class Parser:
         self.s = requests.Session()
         self.s.headers = {}
 
-        temp_dir_path = os.getcwd() + '\\_temp\\' + 'profile_' + profile
-        os.makedirs(temp_dir_path, exist_ok=True)
-        options = ChromeOptions()
-        options.add_argument(f"--user-data-dir={temp_dir_path}")
-        if is_headless:
-            options.add_argument('--headless')
-        options.page_load_strategy = 'eager'
-        options.add_argument('--start-maximized')
-        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-        self.driver.implicitly_wait(5)
+        try:
+            temp_dir_path = os.getcwd() + '\\_temp\\' + 'profile_' + profile
+            os.makedirs(temp_dir_path, exist_ok=True)
+            options = ChromeOptions()
+            options.add_argument(f"--user-data-dir={temp_dir_path}")
+            if is_headless:
+                options.add_argument('--headless')
+            options.page_load_strategy = 'eager'
+            options.add_argument('--start-maximized')
+            self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+            self.driver.implicitly_wait(5)
+        except:
+            print('[!] Error on start chromedriver')
 
         self.topic_img: str = ''
         self.topic_tags = ''
@@ -83,7 +86,7 @@ class Parser:
     def make_post(self, delay=5):
         bot = get_bot()
 
-        if 'data:image' in self.topic_img or self.topic_img == '':
+        if 'data:image' in self.topic_img or self.topic_img == '' or 'https://' not in self.topic_img:
             self.topic_img = open('content/no.png', 'rb')
 
         elif '.webp' in self.topic_img:
@@ -299,6 +302,8 @@ class Parser:
             self.topic_link = each['href']
             self.topic_post = clear_text_format(each.find('div', class_='a-item__excerpt').text)
             self.topic_img = each.find('img')['srcset'].split(' ')[0]
+            if 'https://' not in self.topic_img:
+                self.topic_img = 'https://cq.ru' + self.topic_img
 
             if debug:
                 topic_post_full = clear_text_format(
@@ -326,6 +331,10 @@ class Parser:
 
         for each in items:
             self.topic_name = clear_text_format(each.find('h2', class_='story__title').text)
+
+            if each.find('a', class_='story__sponsor') is not None:
+                continue
+
             self.topic_link = each.find('a', class_='story__title-link')['href']
             self.topic_post = clear_text_format(each.find('div', class_='story-block_type_text').text)
             try:
