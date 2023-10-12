@@ -51,7 +51,7 @@ def catcherError(func):
             return out
         except Exception as e:
             msg = f"[!] Error in {func.__name__}: {e}"
-            get_bot().send_message(admins, msg)
+            get_bot().send_message(admins[0], msg)
             print(msg)
 
     return f
