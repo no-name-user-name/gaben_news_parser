@@ -1,4 +1,6 @@
+import datetime
 import re
+import time
 from io import BytesIO
 
 from PIL import Image
@@ -44,13 +46,23 @@ def image_to_byte_array(image: Image) -> bytes:
     return img_byte_arr.getvalue()
 
 
+def log(msg):
+    print(f"[{datetime.datetime.now()}] {msg}")
+
+
 def catcherError(func):
     def f(*args, **kwargs):
         try:
+            start_t = time.time()
+            log(f'[+] Start {func.__name__}')
             out = func(*args, **kwargs)
+            log(f'[+] End {func.__name__} | Time spend: {time.time() - start_t} sec')
+
             return out
+
         except Exception as e:
             msg = f"[!] Error in {func.__name__}: {e}"
+            log(msg)
             get_bot().send_message(admins[0], msg)
 
     return f
