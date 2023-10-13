@@ -18,7 +18,6 @@
 * [Built With](#built-with)
 * [Getting Started](#getting-started)
   * [Installation](#installation)
-* [Authors](#authors)
 
 ## About The Project
 
@@ -50,7 +49,3 @@ admins = 94095  #  admin chat_id
 ```
 
 4. Start main.py
-
-## Authors
-
-* **Dmitry Neutron** - ** - [Dmitry Neutron](https://github.com/no-name-user-name) - **
