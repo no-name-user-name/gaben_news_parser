@@ -1,6 +1,4 @@
 import io
-import os
-import time
 from pprint import pprint
 from time import sleep
 
@@ -8,37 +6,22 @@ import requests
 from PIL import Image
 from bs4 import BeautifulSoup as bs
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from selenium import webdriver
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 
 from config import admins
 from gaben.bot import get_bot
 from gaben.database import DataBase
 from gaben.utils import clear_text_format, set_tags, image_to_byte_array, catcherError
+from gaben.webdriver import WebDriver
 
 
 class Parser:
     def __init__(self, is_headless=True, profile='main'):
         self.db = DataBase()
+        self.is_headless = is_headless
+        self.profile = profile
 
         self.s = requests.Session()
         self.s.headers = {}
-
-        try:
-            temp_dir_path = os.getcwd() + '\\_temp\\' + 'profile_' + profile
-            os.makedirs(temp_dir_path, exist_ok=True)
-            options = ChromeOptions()
-            options.add_argument(f"--user-data-dir={temp_dir_path}")
-            if is_headless:
-                options.add_argument('--headless')
-            options.page_load_strategy = 'eager'
-            options.add_argument('--start-maximized')
-            self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-            self.driver.implicitly_wait(5)
-        except:
-            print('[!] Error on start chromedriver')
 
         self.topic_img: str = ''
         self.topic_tags = ''
@@ -48,21 +31,6 @@ class Parser:
 
     def __get_content_request(self, url):
         return bs(self.s.get(url).content, features="html.parser")
-
-    def __get_content_chromedriver(self, url):
-        self.driver.get(url)
-        total_page_height = self.driver.execute_script("return document.body.scrollHeight")
-        browser_window_height = self.driver.get_window_size(windowHandle='current')['height']
-
-        current_position = self.driver.execute_script('return window.pageYOffset')
-        while total_page_height - current_position > browser_window_height:
-            self.driver.execute_script(
-                f"window.scrollTo({current_position}, {250 + current_position});"
-            )
-            current_position = self.driver.execute_script('return window.pageYOffset')
-            time.sleep(0.01)
-        time.sleep(1)
-        return bs(self.driver.page_source, features="html.parser")
 
     def __check_is_old(self, url):
         if self.db.get_news(url) is None:
@@ -267,7 +235,8 @@ class Parser:
 
     @catcherError
     def vgtimes(self, debug=False):
-        soup = self.__get_content_chromedriver('https://vgtimes.ru/free/')
+        driver = WebDriver(self.is_headless, self.profile)
+        soup = driver.get_content('https://vgtimes.ru/free/')
         items = soup.find_all("li", class_="hc")
 
         for each in items:
@@ -277,7 +246,7 @@ class Parser:
             self.topic_post = clear_text_format(each.find('div', class_='item-text').text)
 
             if debug:
-                topic_soup = self.__get_content_chromedriver(self.topic_link)
+                topic_soup = driver.get_content(self.topic_link)
                 topic_post_full = clear_text_format(topic_soup.find('div', class_='news_item').text)
                 self.topic_tags = set_tags(self.topic_name + topic_post_full)
 
@@ -287,7 +256,7 @@ class Parser:
                 continue
 
             if not self.__check_is_old(self.topic_link):
-                topic_soup = self.__get_content_chromedriver(self.topic_link)
+                topic_soup = driver.get_content(self.topic_link)
                 topic_post_full = clear_text_format(topic_soup.find('div', class_='news_item').text)
                 self.topic_tags = set_tags(self.topic_name + topic_post_full)
                 self.make_post()
