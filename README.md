@@ -1,6 +1,7 @@
 <br/>
 <p align="center">
   <h3 align="center">Gaben News Parser</h3>
+  <h4 align="center">https://t.me/gaben_media</h4>
 
   <p align="center">
     A simple news parser and publisher in a telegram channel
