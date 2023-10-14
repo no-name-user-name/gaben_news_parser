@@ -20,6 +20,7 @@ class WebDriver:
         options.add_argument('--start-maximized')
         self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
         self.driver.implicitly_wait(5)
+        self.driver.set_page_load_timeout(20)
 
     def get_content(self, url) -> bs:
         self.driver.get(url)
