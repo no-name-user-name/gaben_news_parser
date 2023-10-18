@@ -11,6 +11,8 @@ from gaben.bot import get_bot
 
 def clear_text_format(txt):
     txt = txt.strip()
+    if txt == '':
+        return ''
     txt = txt.replace('\n\n', '\n').replace('\t', '')
     if txt[0:1] == '\n':
         txt = txt[1:]
@@ -61,8 +63,9 @@ def catcherError(func):
             return out
 
         except Exception as e:
+            raise
             msg = f"[!] Error in {func.__name__}: {e}"
             log(msg)
-            get_bot().send_message(admins[0], msg)
+            get_bot().send_message(admins[0], msg, disable_notification=True)
 
     return f
