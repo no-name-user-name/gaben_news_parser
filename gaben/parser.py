@@ -299,13 +299,22 @@ class Parser:
         items = soup.find_all("div", class_="story__main")
 
         for each in items:
-            self.topic_name = clear_text_format(each.find('h2', class_='story__title').text)
+            self.topic_name = each.find('h2', class_='story__title')
+            if self.topic_name is None:
+                continue
+            else:
+                self.topic_name = clear_text_format(self.topic_name.text)
 
             if each.find('a', class_='story__sponsor') is not None:
                 continue
 
             self.topic_link = each.find('a', class_='story__title-link')['href']
-            self.topic_post = clear_text_format(each.find('div', class_='story-block_type_text').text)
+            self.topic_post = each.find('div', class_='story-block_type_text')
+
+            if self.topic_post is None:
+                continue
+            else:
+                self.topic_post = clear_text_format(self.topic_post.text)
             try:
                 self.topic_img = each.find('img', class_='story-image__image')['data-src']
             except TypeError:
@@ -313,9 +322,14 @@ class Parser:
 
             if debug:
                 try:
-                    topic_post_full = clear_text_format(
-                        self.__get_content_request(self.topic_link).find('div', class_='story__content-inner').text
-                    )
+                    topic_post_full = self.__get_content_request(self.topic_link)\
+                        .find('div', class_='story__content-inner')
+
+                    if topic_post_full is None:
+                        continue
+                    else:
+                        topic_post_full = clear_text_format(topic_post_full.text)
+
                 except AttributeError:
                     topic_post_full = self.topic_post
                 self.topic_tags = set_tags(self.topic_name + topic_post_full)
